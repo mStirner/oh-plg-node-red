@@ -1,0 +1,62 @@
+<script type="text/javascript">
+    RED.nodes.registerType("scene", {
+        category: "OpenHaus",
+        color: "#a6bbcf",
+        defaults: {
+            name: { value: "" },
+            scene: { value: "" },
+        },
+        inputs: 1,
+        outputs: 2,
+        outputLabels: ["State Changes", "Item data/when triggered"],
+        icon: "file.svg",
+        label() {
+            return this.name || "scene";
+        },
+        oneditprepare() {
+
+            fetch("/api/scenes").then((res) => {
+                return res.json();
+            }).then(data => {
+
+                console.log("scene", data)
+
+                const select = $("#node-input-scene");
+                select.empty();
+
+                data.forEach(item => {
+                    select.append($("<option></option>").val(item._id).text(item.name));
+                });
+
+                if (this.scene) {
+                    select.val(this.scene);
+                }
+
+            }).catch(err => {
+                console.error("Fehler beim Laden der Daten", err);
+            });
+
+        },
+        oneditsave() {
+            this.scene = $("#node-input-scene").val();
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="scene">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-scene"><i class="fa fa-caret-down"></i> Scene</label>
+        <select id="node-input-scene"></select>
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="lower-case">
+    <p>Execute a scene on a endpoint item</p>
+</script>

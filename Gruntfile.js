@@ -49,6 +49,7 @@ module.exports = function (grunt) {
             `mkdir -p ${PATH_DIST}`,
             `cp package*.json ${PATH_BUILD}`,
             "grunt uglify",
+            `cp nodes/*.html ${PATH_BUILD}/nodes`
         ].forEach((cmd) => {
             cp.execSync(cmd, {
                 env: process.env,

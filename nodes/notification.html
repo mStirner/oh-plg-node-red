@@ -1,0 +1,30 @@
+<script type="text/javascript">
+    RED.nodes.registerType("notification", {
+        category: "OpenHaus",
+        color: "#a6bbcf",
+        defaults: {
+            name: { value: "" }
+        },
+        inputs: 1,
+        outputs: 1,
+        outputLabels: ["notification item when published"],
+        inputLabels: ["notification item data"],
+        icon: "file.svg",
+        label() {
+            return this.name || "notification";
+        },
+    });
+</script>
+
+<script type="text/html" data-template-name="notification">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="lower-case">
+    <p>Execute when a notifcation is published</p>
+</script>

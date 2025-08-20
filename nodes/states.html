@@ -1,0 +1,109 @@
+<script type="text/javascript">
+    RED.nodes.registerType("states", {
+        category: "OpenHaus",
+        color: "#a6bbcf",
+        defaults: {
+            name: { value: "" },
+            endpoint: { value: "" },
+            state: { value: "" }
+        },
+        inputs: 1,
+        outputs: 1,
+        outputLabels: ["State item/fired when value changes"],
+        icon: "file.svg",
+        label() {
+            return this.name || "states";
+        },
+        oneditprepare() {
+
+            const self = this;
+
+            const $endpoints = $("#node-input-endpoints");
+            const $states = $("#node-input-states");
+
+            let endpointsList = [];
+
+            const clearAndReset = ($el) => {
+                $el.empty();
+                $el.append($("<option disabled selected>").text("Bitte wählen..."));
+            };
+
+            const loadStates = (endpointId) => {
+
+                const selectedEndpoint = endpointsList.find(obj => obj._id === endpointId);
+                if (!selectedEndpoint || !selectedEndpoint.states) return;
+
+                clearAndReset($states);
+
+                selectedEndpoint.states.forEach(state => {
+                    $states.append($("<option></option>").val(state._id).text(state.name));
+                });
+
+                if (self.state) {
+                    $states.val(self.state);
+                }
+
+            };
+
+            // Event Listener: Wenn Endpoint geändert wird
+            $endpoints.on("change", function () {
+                const selectedId = $(this).val();
+                loadStates(selectedId);
+            });
+
+            // Initial fetch für Endpoints
+            fetch("/api/endpoints", {
+                headers: {
+                    //"x-auth-token": localStorage.getItem("")
+                }
+            }).then((res) => {
+                return res.json();
+            }).then(data => {
+
+                endpointsList = data || [];
+                clearAndReset($endpoints);
+
+                data.forEach(item => {
+                    $endpoints.append($("<option></option>").val(item._id).text(item.name));
+                });
+
+                if (self.endpoint) {
+                    $endpoints.val(self.endpoint);
+                    loadStates(self.endpoint);
+                }
+
+            }).catch(err => {
+                console.error("Fehler beim Laden der Endpoints:", err);
+            });
+
+        },
+        oneditsave() {
+            this.endpoint = $("#node-input-endpoints").val();
+            this.state = $("#node-input-states").val();
+        }
+    });
+</script>
+
+
+<script type="text/html" data-template-name="states">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-endpoints"><i class="fa fa-caret-down"></i> Endpoint</label>
+        <select id="node-input-endpoints"></select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-states"><i class="fa fa-caret-down"></i> State</label>
+        <select id="node-input-states"></select>
+    </div>    
+
+</script>
+
+<script type="text/html" data-help-name="lower-case">
+    <p>Set/get state values for endpoint item</p>
+</script>

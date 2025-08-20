@@ -1,0 +1,110 @@
+<script type="text/javascript">
+    RED.nodes.registerType("command", {
+        category: "OpenHaus",
+        color: "#a6bbcf",
+        defaults: {
+            name: { value: "" },
+            endpoint: { value: "" },
+            command: { value: "" },
+            ignoreParams: { value: false }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "file.svg",
+        label() {
+            return this.name || "command";
+        },
+        oneditprepare() {
+            const self = this;
+
+            const $endpoints = $("#node-input-endpoints");
+            const $commands = $("#node-input-commands");
+
+            let endpointsList = [];
+
+            const clearAndReset = ($el) => {
+                $el.empty();
+                $el.append($("<option disabled selected>").text("Bitte wählen..."));
+            };
+
+            const loadStates = (endpointId) => {
+                const selectedEndpoint = endpointsList.find(obj => obj._id === endpointId);
+                if (!selectedEndpoint || !selectedEndpoint.commands) return;
+
+                clearAndReset($commands);
+
+                selectedEndpoint.commands.forEach(state => {
+                    $commands.append($("<option></option>").val(state._id).text(state.name));
+                });
+
+                if (self.command) {
+                    $commands.val(self.command);
+                }
+            };
+
+            // Event Listener: Wenn Endpoint geändert wird
+            $endpoints.on("change", function () {
+                const selectedId = $(this).val();
+                loadStates(selectedId);
+            });
+
+            // Initial fetch für Endpoints
+            fetch("/api/endpoints", {
+                headers: {
+                    //"x-auth-token": localStorage.getItem("")
+                }
+            }).then((res) => {
+                return res.json();
+            }).then(data => {
+
+                endpointsList = data || [];
+                clearAndReset($endpoints);
+
+                data.forEach(item => {
+                    $endpoints.append($("<option></option>").val(item._id).text(item.name));
+                });
+
+                if (self.endpoint) {
+                    $endpoints.val(self.endpoint);
+                    loadStates(self.endpoint);
+                }
+
+            }).catch(err => {
+                console.error("Fehler beim Laden der Endpoints:", err);
+            });
+        },
+
+        oneditsave() {
+            this.endpoint = $("#node-input-endpoints").val();
+            this.command = $("#node-input-commands").val();
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="command">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+  
+    <div class="form-row">
+        <label for="node-input-endpoints"><i class="fa fa-caret-down"></i> Endpoint</label>
+        <select id="node-input-endpoints"></select>
+    </div>    
+
+    <div class="form-row">
+        <label for="node-input-commands"><i class="fa fa-caret-down"></i> Commands</label>
+        <select id="node-input-commands"></select>
+    </div>        
+
+    <div class="form-row">
+        <label for="node-input-ignoreParams"><i class="fa fa-tag"></i> Ignore Params Input</label>
+        <input type="checkbox" id="node-input-ignoreParams">
+    </div>    
+
+</script>
+
+<script type="text/html" data-help-name="lower-case">
+    <p>Execute a command on a endpoint item</p>
+</script>

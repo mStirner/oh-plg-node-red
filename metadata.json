@@ -1,0 +1,12 @@
+{
+  "name": "oh-plg-node-red",
+  "version": "1.0.0",
+  "intents": [
+    "store",
+    "vault"
+  ],
+  "author": "Marc Stirner <marc.stirner@open-haus.io>",
+  "website": "",
+  "description": "",
+  "uuid": "09d24b11-041f-4d4b-911c-f2ab04b4f60d"
+}

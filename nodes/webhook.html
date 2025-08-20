@@ -1,0 +1,60 @@
+<script type="text/javascript">
+    RED.nodes.registerType("webhook", {
+        category: "OpenHaus",
+        color: "#a6bbcf",
+        defaults: {
+            name: { value: "" },
+            webhook: { value: "", required: true },
+        },
+        inputs: 0,
+        outputs: 1,
+        outputLabels: ["Webhook item/fired when triggered"],
+        icon: "file.svg",
+        label() {
+            return this.name || "webhook";
+        },
+        oneditprepare() {
+
+            fetch("/api/webhooks").then((res) => {
+                return res.json();
+            }).then(data => {
+
+                const select = $("#node-input-webhook");
+                select.empty();
+
+                data.forEach(item => {
+                    select.append($("<option></option>").val(item._id).text(item.name));
+                });
+
+                if (this.webhook) {
+                    select.val(this.webhook);
+                }
+
+            }).catch(err => {
+                console.error("Fehler beim Laden der Daten", err);
+            });
+
+        },
+        oneditsave() {
+            this.webhook = $("#node-input-webhook").val();
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="webhook">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>    
+
+    <div class="form-row">
+        <label for="node-input-webhook"><i class="fa fa-caret-down"></i> Webhook</label>
+        <select id="node-input-webhook"></select>
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="lower-case">
+    <p>Execute a webhook on a endpoint item</p>
+</script>
