@@ -1,4 +1,5 @@
 const { Notification } = require("../../../system/notifications/index.js");
+const createReplacer = require("../replacer.js");
 
 module.exports = function (RED) {
 
@@ -13,8 +14,10 @@ module.exports = function (RED) {
         const publishHandler = (event) => {
             if (event.uuid !== notifcation?.uuid) {
 
+                const replacer = createReplacer();
+
                 const msg = {
-                    payload: JSON.parse(JSON.stringify(event))
+                    payload: JSON.parse(JSON.stringify(event, replacer))
                 };
 
                 this.send(msg)

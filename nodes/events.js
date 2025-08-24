@@ -1,8 +1,11 @@
 const { emitter, emitted } = require("../../../system/component/class.events.js");
+const createReplacer = require("../replacer.js");
 
 module.exports = function (RED) {
 
     function EventsNode(config) {
+
+        const replacer = createReplacer();
 
         RED.nodes.createNode(this, config);
 
@@ -35,7 +38,7 @@ module.exports = function (RED) {
                         component,
                         event,
                         args
-                    }))
+                    }, replacer))
                 };
 
                 this.send(msg);

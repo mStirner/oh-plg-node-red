@@ -1,4 +1,5 @@
 const C_SCENES = require("../../../components/scenes/index.js");
+const createReplacer = require("../replacer.js");
 
 module.exports = function (RED) {
 
@@ -27,8 +28,10 @@ module.exports = function (RED) {
             const stateHandler = (state) => {
                 if (state.running && state.index === 0) {
 
+                    const replacer = createReplacer();
+
                     const msg = {
-                        payload: JSON.parse(JSON.stringify(item))
+                        payload: JSON.parse(JSON.stringify(item, replacer))
                     };
 
                     this.send([
@@ -38,8 +41,10 @@ module.exports = function (RED) {
 
                 } else {
 
+                    const replacer = createReplacer();
+
                     const msg = {
-                        payload: JSON.parse(JSON.stringify(state))
+                        payload: JSON.parse(JSON.stringify(state, replacer))
                     };
 
                     this.send([

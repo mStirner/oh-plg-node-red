@@ -1,4 +1,5 @@
 const C_WEBHOOKS = require("../../../components/webhooks/index.js");
+const createReplacer = require("../replacer.js");
 
 module.exports = function (RED) {
 
@@ -26,9 +27,11 @@ module.exports = function (RED) {
 
             const handler = () => {
 
+                const replacer = createReplacer();
+
                 let msg = {
                     //payload: item // gives "[object object]" in debugger
-                    payload: JSON.parse(JSON.stringify(item))
+                    payload: JSON.parse(JSON.stringify(item, replacer))
                 };
 
                 this.send(msg);

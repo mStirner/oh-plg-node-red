@@ -1,4 +1,5 @@
 const C_ENDPOINTS = require("../../../components/endpoints/index.js");
+const createReplacer = require("../replacer.js");
 
 module.exports = function (RED) {
 
@@ -33,8 +34,10 @@ module.exports = function (RED) {
             const stateHandler = (obj) => {
                 if (obj._id === state._id) {
 
+                    const replacer = createReplacer();
+
                     let msg = {
-                        payload: JSON.parse(JSON.stringify(state))
+                        payload: JSON.parse(JSON.stringify(state, replacer))
                         //payload: obj
                     };
 
@@ -53,8 +56,10 @@ module.exports = function (RED) {
 
             this.on("input", (msg, send, done) => {
 
+                const replacer = createReplacer();
+
                 state.value = msg.payload;
-                msg.payload = JSON.parse(JSON.stringify(state));
+                msg.payload = JSON.parse(JSON.stringify(state, replacer));
 
                 this.status({
                     fill: "blue",
