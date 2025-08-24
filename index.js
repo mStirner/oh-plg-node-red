@@ -91,6 +91,11 @@ module.exports = (self, logger, init) => {
             const server = self.httpServer(app);
             // or server.on("request", app);
 
+            // fix #3
+            app.get("/", (req, res) => {
+                res.redirect("/red");
+            });
+
             const config = store.lean();
             const secrets = vault.decrypt();
 
