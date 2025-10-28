@@ -170,6 +170,12 @@ module.exports = (self, logger, init) => {
             app.use(settings.httpAdminRoot, RED.httpAdmin);
             app.use(settings.httpNodeRoot, RED.httpNode);
 
+            server.addManifset({
+                name: "NODE-RED", // display name
+                icon: "fa-solid fa-chart-diagram", // icon
+                src: `/api/plugins/${self._id}/proxy/red` // iframe src/can be full url e.g. https://example.com
+            });
+
         }).catch((err) => {
 
             logger.error(err, "Could not init plugin");
